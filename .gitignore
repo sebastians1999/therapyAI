@@ -1,0 +1,8 @@
+# Environment files (secrets)
+.env
+__pycache__
+__pycache__/*
+.env.*
+!.env.example
+!.env.sample
+
