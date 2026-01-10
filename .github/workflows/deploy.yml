@@ -57,7 +57,7 @@ jobs:
             # Check if venv has pip, if not recreate it
             if [ ! -f ".venv/bin/pip" ]; then
               echo "=== Recreating virtual environment (missing pip) ==="
-              rm -rf .venv
+              sudo rm -rf .venv
               python3 -m venv .venv
             fi
             
