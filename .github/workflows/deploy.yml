@@ -48,29 +48,18 @@ jobs:
           ssh ${{ secrets.SSH_USER }}@${{ secrets.VM_IP }} << 'EOF'
             set -e  # Exit on any error
             
-            echo "=== DEBUG: Current user and directory ==="
-            whoami
-            pwd
-            
             cd /opt/therapyAI
-            echo "=== DEBUG: Contents of /opt/therapyAI ==="
-            ls -la
-            
             git fetch origin
             git reset --hard origin/main
             
             cd backend
-            echo "=== DEBUG: Contents of backend/ ==="
-            ls -la
             
-            # Create venv if it doesn't exist
-            if [ ! -d ".venv" ]; then
-              echo "=== Creating virtual environment ==="
+            # Check if venv has pip, if not recreate it
+            if [ ! -f ".venv/bin/pip" ]; then
+              echo "=== Recreating virtual environment (missing pip) ==="
+              rm -rf .venv
               python3 -m venv .venv
             fi
-            
-            echo "=== DEBUG: Checking .venv/bin/ ==="
-            ls -la .venv/bin/ | head -20
             
             # Install uv and sync dependencies
             .venv/bin/pip install --upgrade pip uv
