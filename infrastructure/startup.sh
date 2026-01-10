@@ -22,7 +22,10 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 mkdir -p /var/www/therapyAI
 mkdir -p /opt/therapyAI
 
-# Set permissions
-chown -R www-data:www-data /var/www/therapyAI
+# Set permissions (Sebastian is the deploy user)
+chown -R sebastian:www-data /var/www/therapyAI
+chown -R sebastian:www-data /opt/therapyAI
+chmod -R 775 /var/www/therapyAI
+chmod -R 775 /opt/therapyAI
 
 echo "Startup script completed!"
