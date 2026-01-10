@@ -5,6 +5,9 @@ from jose import jwt, JWTError
 from supabase import create_client, Client
 from typing import Any
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 try:
     from backend.schemas import User

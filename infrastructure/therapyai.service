@@ -1,0 +1,17 @@
+[Unit]
+Description=TherapyAI FastAPI Backend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/therapyai/backend
+Environment="PATH=/opt/therapyai/backend/.venv/bin"
+EnvironmentFile=/opt/therapyai/backend/.env
+ExecStart=/opt/therapyai/backend/.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
