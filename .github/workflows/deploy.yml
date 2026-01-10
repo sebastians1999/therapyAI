@@ -32,12 +32,12 @@ jobs:
 
       - name: Deploy frontend
         run: |
-          scp -r client/dist/* ${{ secrets.SSH_USER }}@${{ secrets.VM_IP }}:/var/www/therapyai/
+          scp -r client/dist/* ${{ secrets.SSH_USER }}@${{ secrets.VM_IP }}:/var/www/therapyAI/
 
       - name: Deploy backend
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.VM_IP }} << 'EOF'
-            cd /opt/therapyai
+            cd /opt/therapyAI
             git pull origin main
             cd backend
             source .venv/bin/activate
