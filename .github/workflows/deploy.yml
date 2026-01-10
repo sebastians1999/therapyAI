@@ -50,10 +50,11 @@ jobs:
             git fetch origin
             git reset --hard origin/main
             cd backend
-            # Ensure uv is installed for this user
-            python3 -m pip install --user uv
+            # Activate the virtual environment first
             source .venv/bin/activate
-            # Use the full path to uv
-            ~/.local/bin/uv sync
+            # Install uv inside the venv (avoids PEP 668 issues)
+            pip install uv
+            # Now uv is available in the venv's bin folder
+            uv sync
             sudo systemctl restart therapyai
           EOF
