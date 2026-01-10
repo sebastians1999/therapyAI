@@ -46,12 +46,36 @@ jobs:
       - name: Deploy backend
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.VM_IP }} << 'EOF'
+            set -e  # Exit on any error
+            
+            echo "=== DEBUG: Current user and directory ==="
+            whoami
+            pwd
+            
             cd /opt/therapyAI
+            echo "=== DEBUG: Contents of /opt/therapyAI ==="
+            ls -la
+            
             git fetch origin
             git reset --hard origin/main
+            
             cd backend
-            # Use explicit paths to venv binaries (more reliable in non-interactive SSH)
-            .venv/bin/pip install uv
+            echo "=== DEBUG: Contents of backend/ ==="
+            ls -la
+            
+            # Create venv if it doesn't exist
+            if [ ! -d ".venv" ]; then
+              echo "=== Creating virtual environment ==="
+              python3 -m venv .venv
+            fi
+            
+            echo "=== DEBUG: Checking .venv/bin/ ==="
+            ls -la .venv/bin/ | head -20
+            
+            # Install uv and sync dependencies
+            .venv/bin/pip install --upgrade pip uv
             .venv/bin/uv sync
+            
             sudo systemctl restart therapyai
+            echo "=== Deployment complete! ==="
           EOF
