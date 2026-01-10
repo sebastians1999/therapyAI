@@ -19,10 +19,10 @@ apt-get install -y \
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Create app directories
-mkdir -p /var/www/therapyai
-mkdir -p /opt/therapyai
+mkdir -p /var/www/therapyAI
+mkdir -p /opt/therapyAI
 
 # Set permissions
-chown -R www-data:www-data /var/www/therapyai
+chown -R www-data:www-data /var/www/therapyAI
 
 echo "Startup script completed!"
