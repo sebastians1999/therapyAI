@@ -25,9 +25,13 @@ jobs:
 
       - name: Build frontend
         working-directory: client
+        env:
+          VITE_API_URL: ${{ secrets.PRODUCTION_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           pnpm install --frozen-lockfile
-          VITE_API_URL=${{ secrets.PRODUCTION_URL }} pnpm run build
+          pnpm run build
 
       # Deploy to VM
       - name: Setup SSH
