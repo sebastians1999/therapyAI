@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
+import ReactMarkdown from 'react-markdown';
 import { 
   Brain, 
   AlertTriangle, 
@@ -147,9 +148,9 @@ export default function Analysis() {
                 <p className="text-sm text-muted-foreground mb-4">
                   Analysis for entry from <span className="font-medium text-foreground">{entryDate}</span>
                 </p>
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                  <div className="bg-muted/30 rounded-lg p-6 text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-                    {analysis}
+                <div className="bg-muted/30 rounded-lg p-6">
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground">
+                    <ReactMarkdown>{analysis}</ReactMarkdown>
                   </div>
                 </div>
               </CardContent>

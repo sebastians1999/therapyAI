@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 from openai import OpenAI
 import os
 import logging
+import yaml
+from pathlib import Path
 from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
@@ -23,6 +25,13 @@ router = APIRouter(prefix="/api/inference", tags=["inference"])
 
 # Initialize OpenAI client
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+
+def load_prompts():
+    """Load prompts from the YAML file."""
+    prompt_path = Path(__file__).parent / "prompts" / "mental_health_checkin.yaml"
+    with open(prompt_path, "r") as f:
+        return yaml.safe_load(f)
 
 
 @router.get("/health")
@@ -122,53 +131,15 @@ async def analyze_entries(num_entries: int, current_user: User) -> dict[str, Any
 
         date_range = f"{entries_reversed[0]['created_at'][:10]} to {entries_reversed[-1]['created_at'][:10]}"
 
-        system_prompt = """You are a supportive mental-health check-in assistant.
-You are not a clinician and must not diagnose or make absolute claims.
-Base your analysis only on the journal text provided and speak in probabilities, not certainties.
-Be calm, honest, and practical—no sugar-coating, no alarmism.
-
-If the journal suggests self-harm, suicidal ideation, harm to others, or inability to stay safe, explicitly say so and recommend reaching out immediately to local emergency services, a crisis hotline, or a trusted person. Keep the tone non-judgmental and supportive."""
-
-        user_prompt = f"""DATE RANGE: {date_range}
-ANALYSIS PERIOD: Last {num_entries} entries
-
-JOURNAL ENTRIES (in chronological order):
-{formatted_entries}
-
-USER'S ACTIVE GOALS:
-{formatted_goals}
-
-Your task: Perform a mental health check-in based on these journal entries AND analyze progress towards the user's goals.
-
-1. Emotional snapshot
-Summarize the overall emotional tone and dominant feelings across the entries.
-
-2. Stressors & patterns
-Identify likely stressors, recurring themes, or cognitive patterns (e.g., rumination, avoidance, pressure, isolation).
-
-3. Risk flags (if any)
-Point out potential warning signs the person should be wary of in the near term (burnout, spiraling thoughts, withdrawal, sleep disruption, etc.).
-If there are no major red flags, say that clearly.
-
-4. Protective factors & strengths
-Highlight anything in the journals that suggests resilience, support, insight, or healthy coping.
-
-5. Goal progress analysis
-Based on the journal entries, analyze whether the person has made progress towards their stated goals. For each goal:
-   - Identify any evidence in the journal entries that relates to the goal
-   - Assess whether progress was made (positive, neutral, or setbacks)
-   - Note specific actions, behaviors, or reflections mentioned that align with or contradict the goal
-   - If no relevant evidence is found, state that clearly
-   - Provide encouragement and suggestions for how to better align journaling/actions with goal achievement
-
-6. Practical next steps (24–48h)
-Offer a short list of concrete, realistic actions that could help stabilize or improve their state AND support their goal progress.
-
-7. Gentle follow-up questions
-Provide 3–6 open-ended questions that could help the person reflect or check in with themselves, including questions about their goals.
-
-8. Safety note (only if needed)
-If there are safety concerns, state them plainly and include guidance to seek immediate help."""
+        # Load prompts from YAML
+        prompts = load_prompts()
+        system_prompt = prompts["system_prompt"]
+        user_prompt = prompts["user_prompt_template"].format(
+            date_range=date_range,
+            num_entries=num_entries,
+            formatted_entries=formatted_entries,
+            formatted_goals=formatted_goals,
+        )
 
         completion = openai_client.chat.completions.create(
             model="gpt-4-turbo",
